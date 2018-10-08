@@ -1,0 +1,135 @@
+{% extends "web/layout.html" %}
+{% load static %}
+
+{% block header %} {% endblock %}
+
+{% block content %}
+
+    <div class="title-bar">
+        <h1 class="title-bar-title">
+            <span class="d-ib">添加机器</span>
+            <span class="d-ib">
+            <a class="title-bar-shortcut" href="#" title="Add to shortcut list" data-container="body"
+               data-toggle-text="Remove from shortcut list" data-trigger="hover" data-placement="right"
+               data-toggle="tooltip">
+                <span class="sr-only">Add to shortcut list</span>
+            </a>
+        </span>
+        </h1>
+    </div>
+    <div class="row" style="color: black;">
+        <div class="col-md-6 col-md-offset-3">
+            <div class="demo-form-wrapper">
+                <form id="form_input" data-toggle="validator">
+                    <div class="form-group">
+                        <label for="ip" class="control-label">ip</label>
+                        <input id="ip" class="form-control" type="text" name="ip" required
+                               data-inputmask="'alias': 'ip'">
+                        <small class="help-block">输入系统ip，例如192.168.0.1</small>
+                    </div>
+
+                    <div id="div_os_type" class="form-group custom-controls-stacked">
+                        <label for="type" class="control-label">操作系统</label>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="tag" class="control-label">标签</label>
+                        <select id="tagSelect" name="tag" class="custom-select">
+
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="status" class="control-label">机器状态</label>
+                        <select id="status" name="status" class="custom-select">
+                            <option value="1" selected="">空闲</option>
+                            <option value="2">使用中</option>
+                            <option value="3">停机维护</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="biography-1" class="control-label">备注（不超过50个字）</label>
+                        <textarea id="description" class="form-control" name="description"  maxlength="50" required></textarea>
+                        <small class="help-block">简单描述下这个机器</small>
+                    </div>
+
+                    <div class="form-group">
+                        <button type="submit" class="btn btn-primary btn-block">Save Changes</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
+
+{% block tail %}
+
+    <script>
+        var b = $("#form_input");
+        b.find(":input").each(function (b, c) {
+            $(this).inputmask()
+        });
+
+        /* 初始化系统类型选项 */
+        $.ajax({
+            url: '/web/api/v1/os/',
+            type: 'GET',
+            success: function (res, status, xhr) {
+                var objects = res.objects;
+                objects.forEach(function (value, index, array) {
+                    var label = '<label class="custom-control custom-control-primary custom-radio">'+
+                            '<input class="custom-control-input" type="radio" name="type" value="'+value.id+'" required>'+
+                            '<span class="custom-control-indicator"></span>'+
+                            '<small class="custom-control-label">'+value.name+'</small>'+
+                        '</label>';
+
+                    $('#div_os_type').append(label);
+                });
+
+            }
+        });
+
+        /* 初始化标签选项 */
+        $.ajax({
+            url: '/web/api/v1/tag/',
+            type: 'GET',
+            success: function (res, status, xhr) {
+                var objects = res.objects;
+                objects.forEach(function (value, index, array) {
+                    $('#tagSelect').append("<option value='"+value.id+"'>"+value.name+"</option>")
+                });
+
+            }
+        });
+
+        b.submit(function (e) {
+            e.preventDefault();
+            $(this).validate();
+            var dataArray = $(this).serializeArray();
+            var data = {};
+            dataArray.forEach(function (val, index, array) {
+                data[val.name] = val.value
+            });
+            if ($(this).valid()) {
+
+                $.ajax({
+                    url: '/web/api/v1/machine/',
+                    type: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify(data),
+                    dataType: 'json',
+                    error: function (res, status, xhr) {
+                        if (res.status == 201)
+                            layer.msg('添加成功', {time: 700}, function () {
+                                window.location.href = "/web/machine/index.html";
+                            });
+                        else
+                            layer.alert(res.responseText);
+                    }
+                });
+            }
+        })
+    </script>
+{% endblock %}

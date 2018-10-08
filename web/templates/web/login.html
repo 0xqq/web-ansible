@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+{% load static %}
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>登录认证模块</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
+
+    <link rel="icon" type="image/png" href="{% static 'web/favicon-32x32.png' %}" sizes="32x32">
+    <link rel="icon" type="image/png" href="{% static 'web/favicon-16x16.png" sizes="16x16' %}">
+    <link rel="manifest" href="manifest.json">
+    <link rel="mask-icon" href="safari-pinned-tab.svg" color="#d9230f">
+    <meta name="theme-color" content="#ffffff">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,400italic,500,700">
+    <link rel="stylesheet" href="{% static 'web/css/vendor.min.css' %}">
+    <link rel="stylesheet" href="{% static 'web/css/elephant.min.css' %}">
+    <link rel="stylesheet" href="{% static 'web/css/login-2.min.css' %}">
+</head>
+<body>
+<div class="login">
+    <div class="login-body">
+        <a class="login-brand" href="/web/">
+            <img class="img-responsive" src="{% static 'web/img/logo.svg' %}" alt="Elephant">
+        </a>
+        <div class="login-form">
+            {% if error %}
+                <p style="color: red">用户名密码不匹配，请重试</p>
+            {% endif %}
+            <form data-toggle="validator" method="post" action="/web/login">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label for="email">用户名</label>
+                    <input id="email" class="form-control" type="text" name="username" spellcheck="false"
+                           autocomplete="off" data-msg-required="请输入你的用户名" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">密码</label>
+                    <input id="password" class="form-control" type="password" name="password" minlength="6"
+                           data-msg-minlength="Password must be 6 characters or more." data-msg-required="请输入你的密码"
+                           required>
+                </div>
+                <div class="form-group">
+                    <label class="custom-control custom-control-primary custom-checkbox">
+                        <input class="custom-control-input" type="checkbox" checked="checked">
+                        <span class="custom-control-indicator"></span>
+                        <span class="custom-control-label">保持登录</span>
+                    </label>
+                    <span aria-hidden="true"> · </span>
+                </div>
+                <input type="hidden" name="next" value="{{ next }}" />
+                <button class="btn btn-primary btn-block" type="submit">登录</button>
+            </form>
+        </div>
+    </div>
+    {#      <div class="login-footer">#}
+    {#        Don't have an account? <a href="signup-2.html">Sign Up</a>#}
+    {#      </div>#}
+</div>
+<script src="{% static 'web/js/vendor.min.js' %}"></script>
+<script src="{% static 'web/js/elephant.min.js' %}"></script>
+</body>
+
+</html>

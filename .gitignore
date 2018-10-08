@@ -1,0 +1,9 @@
+.idea/*
+*.iml
+*.DS_Store
+*/logs/
+*.log
+logs
+*.pyc
+__pycache__
+venv
